@@ -10,10 +10,88 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_24_141410) do
+ActiveRecord::Schema.define(version: 2020_08_24_160548) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "feature_languages", force: :cascade do |t|
+    t.bigint "feature_id", null: false
+    t.bigint "language_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["feature_id"], name: "index_feature_languages_on_feature_id"
+    t.index ["language_id"], name: "index_feature_languages_on_language_id"
+  end
+
+  create_table "features", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.bigint "project_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["project_id"], name: "index_features_on_project_id"
+  end
+
+  create_table "frameworks", force: :cascade do |t|
+    t.bigint "language_id", null: false
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["language_id"], name: "index_frameworks_on_language_id"
+  end
+
+  create_table "languages", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "participations", force: :cascade do |t|
+    t.boolean "accepted"
+    t.text "motivation"
+    t.string "work_time"
+    t.boolean "admin"
+    t.bigint "user_id", null: false
+    t.bigint "project_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["project_id"], name: "index_participations_on_project_id"
+    t.index ["user_id"], name: "index_participations_on_user_id"
+  end
+
+  create_table "project_languages", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "language_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["language_id"], name: "index_project_languages_on_language_id"
+    t.index ["project_id"], name: "index_project_languages_on_project_id"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.string "github_repository"
+    t.string "trello_link"
+    t.date "start_date"
+    t.string "website_link"
+    t.string "tag"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_projects_on_user_id"
+  end
+
+  create_table "user_languages", force: :cascade do |t|
+    t.string "level"
+    t.bigint "user_id", null: false
+    t.bigint "language_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["language_id"], name: "index_user_languages_on_language_id"
+    t.index ["user_id"], name: "index_user_languages_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -23,8 +101,28 @@ ActiveRecord::Schema.define(version: 2020_08_24_141410) do
     t.datetime "remember_created_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "batch_number"
+    t.string "city"
+    t.string "country"
+    t.integer "bootcamp_year"
+    t.string "github_username"
+    t.string "linkedin_username"
+    t.string "slack_username"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "feature_languages", "features"
+  add_foreign_key "feature_languages", "languages"
+  add_foreign_key "features", "projects"
+  add_foreign_key "frameworks", "languages"
+  add_foreign_key "participations", "projects"
+  add_foreign_key "participations", "users"
+  add_foreign_key "project_languages", "languages"
+  add_foreign_key "project_languages", "projects"
+  add_foreign_key "projects", "users"
+  add_foreign_key "user_languages", "languages"
+  add_foreign_key "user_languages", "users"
 end
